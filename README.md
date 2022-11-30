@@ -51,6 +51,10 @@ cat urllist.txt | python3 bbssrf.py -b http://collaborator.com -s
 python3 bbssrf.py -b http://collaborator.com -r request.req -x http://127.0.0.1:8080
 ```
 
+#### Video
+
+
+https://user-images.githubusercontent.com/61974788/204865851-032a3d9a-c825-49d4-8cae-21266475a5ee.mp4
 
 
 
@@ -59,6 +63,9 @@ This tool was inspired by Thomas Houhou's <a href="https://github.com/Th0h0/auto
 
 
 ### Thanks to all Contributors
+All contributions are welcomed.
+
+
 <a href="https://github.com/z3dc0ps/BBSSRF/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=z3dc0ps/BBSSRF" />
 </a>
