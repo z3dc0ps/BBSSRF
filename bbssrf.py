@@ -48,6 +48,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-b', help='Interactsh-client or burp collaborator for checking SSRF')
 parser.add_argument('-f', help='List of URLs to scan')
+parser.add_argument('-generate', help='Generate payloads', action='count')
 parser.add_argument('-p', help='PID - payload ID. Detail of the payload used for OOB connection. supported with "-u" and "-r"')
 parser.add_argument('-r', help='Request file to scan')
 parser.add_argument('-s', help='STDIN', action='count')
@@ -73,7 +74,13 @@ def get_payload():
 
         host_remove_http = remove_http(args.u)
         burp_remove_http = remove_http(args.b)
+        
         ssrf_payloads = generate_ssrf_payloads(host_remove_http,burp_remove_http)
+        if args.generate:
+            print(f"{BOLD}Generating Payloads...{NC}\n")
+            for i in range(len(ssrf_payloads)):
+                print(ssrf_payloads[i])
+            exit()
         try:
             payload_data = int(args.p) - 1
             print(f"{OKBLUE}Payload used: {RED}",ssrf_payloads[payload_data],f"{NC}\n")
@@ -82,9 +89,16 @@ def get_payload():
         exit()
     elif args.r:
         valu = open(args.r,'rt')
-        rev = valu.read()                       # all headers
-        full_list_request = rev.split('\n')      # split by new line
-        full_request_allHeaders = full_list_request[1:-2] # all headers except index 0 and -1
+        rev = valu.read()                       
+        full_list_request = rev.split('\n')      
+        full_request_allHeaders = full_list_request[1:-2] 
+
+        for i in range(len(full_request_allHeaders)):
+            full_request_allHeaders = full_list_request[1:-2-i]
+            if full_request_allHeaders[-1] == "":
+                continue
+            else:
+                break
 
         full_request_Headers = dict()
         for sub in full_request_allHeaders:
@@ -94,6 +108,11 @@ def get_payload():
         payload_req_host= full_request_Headers['Host']
         burp_remove_http = remove_http(args.b)
         file_gen_payload = generate_ssrf_payloads(payload_req_host,burp_remove_http)
+        if args.generate:
+            print(f"{BOLD}Generating Payloads...{NC}\n")
+            for i in range(len(file_gen_payload)):
+                print(file_gen_payload[i])
+            exit()
         try:
             payload_data = int(args.p) - 1
             print(f"{OKBLUE}Payload used: {RED}",file_gen_payload[payload_data],f"{NC}\n")
@@ -204,7 +223,21 @@ def get_host_from_File():
 
     full_list_request = rev.split('\n')      # split by new line
     full_request_allHeaders = full_list_request[1:-2] # all headers except index 0 and -1
+    sample_full_request_postData = full_list_request[-1].split('&')
 
+    for  i in range(len(full_list_request)):
+        sample_full_request_postData = full_list_request[-1-i].split('&')
+        if sample_full_request_postData[0] == "":
+            continue
+        else:
+            break
+
+    for i in range(len(full_request_allHeaders)):
+        full_request_allHeaders = full_list_request[1:-2-i]
+        if full_request_allHeaders[-1] == "":
+            continue
+        else:
+            break
     full_request_Headers = dict()
     for sub in full_request_allHeaders:
         key, *val = sub.split(': ')
@@ -226,11 +259,27 @@ def get_host_from_File():
             replaced_bbssrf =  rev.replace('BBSSRF',file_gen_payload[i])
             full_list_request = replaced_bbssrf.split('\n') 
             full_request_postData = full_list_request[-1].split('&') 
+
+            for  i in range(len(full_list_request)):
+                full_request_postData = full_list_request[-1-i].split('&')
+                if full_request_postData[0] == "":
+                    continue
+                else:
+                    break
+
             full_request_postData_dict = dict()
             for sub_dict in full_request_postData:
                 key, *val = sub_dict.split('=')
                 full_request_postData_dict[key] = val[0].strip()
             full_request_allHeaders = full_list_request[1:-2]
+
+            for i in range(len(full_request_allHeaders)):
+                full_request_allHeaders = full_list_request[1:-2-i]
+                if full_request_allHeaders[-1] == "":
+                    continue
+                else:
+                    break
+
             full_request_Headers = dict()
             for sub in full_request_allHeaders:
                 key, *val = sub.split(': ')
@@ -286,14 +335,15 @@ def get_host_from_URL(arg_host,arg_burp):
     host_remove_http = remove_http(arg_host)
     burp_remove_http = remove_http(arg_burp)
 
+    ssrf_payloads = generate_ssrf_payloads(host_remove_http,burp_remove_http)
+    
     print(f"\n{OKBLUE}Host : {RED}",host_remove_http,f"{NC}")
     print(f"{OKBLUE}Iserver : {RED}",burp_remove_http,f"{NC}")
     print(f"{OKBLUE}HTTP Method : {RED}GET{NC}")
     print(f"{GREEN}>> {NC}Generating payloads")
-    ssrf_payloads = generate_ssrf_payloads(host_remove_http,burp_remove_http)
-
     print(f"{GREEN}>>{NC}",len(ssrf_payloads)," Payloads Generated")
     print(f"{GREEN}>>{NC} Check {RED}{args.b}{NC} for OOB connection\n")
+    
     for i in range(len(ssrf_payloads)):
         exploit = threading.Thread(target=exploit_url_ssrf,args=(arg_host,ssrf_payloads[i]))
         exploit.start()
@@ -346,6 +396,8 @@ if (args.f and args.r):
 
 
 if args.p:
+    get_payload()
+if args.generate:
     get_payload()
 if args.u:
     url_exp()
