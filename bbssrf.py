@@ -251,6 +251,8 @@ def get_host_from_File():
     print(f"{OKBLUE}Host : {RED}",payload_req_host,f"{NC}")
     print(f"{OKBLUE}Iserver : {RED}",burp_remove_http,f"{NC}")
     print(f"{OKBLUE}HTTP Method : {RED}",full_request_method,f"{NC}")
+    if args.x:
+        print(f"{OKBLUE}Proxy : {RED}",args.x,f"{NC}")
     print(f"{GREEN}>>{NC}",len(file_gen_payload)," Payloads Generated")
     print(f"{GREEN}>>{NC} Check {RED}{args.b}{NC} for OOB connection\n")
 
@@ -340,6 +342,8 @@ def get_host_from_URL(arg_host,arg_burp):
     print(f"\n{OKBLUE}Host : {RED}",host_remove_http,f"{NC}")
     print(f"{OKBLUE}Iserver : {RED}",burp_remove_http,f"{NC}")
     print(f"{OKBLUE}HTTP Method : {RED}GET{NC}")
+    if args.x:
+        print(f"{OKBLUE}Proxy : {RED}",args.x,f"{NC}")
     print(f"{GREEN}>> {NC}Generating payloads")
     print(f"{GREEN}>>{NC}",len(ssrf_payloads)," Payloads Generated")
     print(f"{GREEN}>>{NC} Check {RED}{args.b}{NC} for OOB connection\n")
