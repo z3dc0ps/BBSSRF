@@ -12,12 +12,13 @@ BBSSRF - Bug Bounty SSRF is a powerful tool to check SSRF OOB connection.
 The testing field must contain "BBSSRF" and this tool will automatically change it to dynamically generated payloads.
 
 <ul>
-  <li>Generating dynamic payloads</li>
-  <li>Testing Single URL </li>
-  <li>Testing URLs list </li>
-  <li>Testing request file</li>
-  <li>Threading requests</li>
-  <li>Intercept request using proxy</li>
+  <li>Generating dynamic payloads ✅</li>
+  <li>Testing Single URL ✅</li>
+  <li>Testing URLs list ✅</li>
+  <li>Testing request file ✅</li>
+  <li>STDIN input supported ✅</li>
+  <li>Threading requests ✅</li>
+  <li>Intercept request using proxy ✅</li>
 </ul>
 
 
@@ -30,24 +31,21 @@ python bbssrf.py -h
 
 ## Usage
 #### Note - Testing field must be replaced with "BBSSRF"
-##### Single URL
+
 ```
+# Single URL
 python3 bbssrf.py -b http://collaborator.com -u http://example.com/index.php?url=BBSSRF
-```
-##### Multiple URLs
-```
+
+# Multiple URLs
 python3 bbssrf.py -b http://collaborator.com -f urllist.txt
-```
-##### Request File
-```
+
+# Request File
 python3 bbssrf.py -b http://collaborator.com -r request.req
-```
-##### STDIN input
-```
+
+# STDIN input
 cat urllist.txt | python3 bbssrf.py -b http://collaborator.com -s
-```
-##### Proxy
-```
+
+# Proxy
 python3 bbssrf.py -b http://collaborator.com -r request.req -x http://127.0.0.1:8080
 ```
 
