@@ -195,7 +195,7 @@ def exploit_file_ssrf(final_req_host,full_request_Headers,full_request_postData_
     if args.v:
         print(file_gen_payload)
     if args.o:
-        save_payloads(final_payloads)
+        save_payloads(file_gen_payload)
         sys.exit()
     if full_request_method == "POST":
         try:
