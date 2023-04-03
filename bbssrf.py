@@ -44,6 +44,8 @@ parser = argparse.ArgumentParser(
     \t\tcat urllist.txt | python3 bbssrf.py -b http://collaborator.com -s
     \t{BOLD}Proxy{NC}
     \t\tpython3 bbssrf.py -b http://collaborator.com -r request.req -x http://127.0.0.1:8080
+    \t{BOLD}Save Payloads{NC}
+    \t\tpython3 bbssrf.py -b http://collaborator.com -f urllist.txt -o output.txt
     """)
 
 parser.add_argument('-b', help='Interactsh-client or burp collaborator for checking SSRF')
@@ -55,6 +57,7 @@ parser.add_argument('-s', help='STDIN', action='count')
 parser.add_argument('-u', help='URL to scan')
 parser.add_argument('-v', help='Verbose output',action='count')
 parser.add_argument('-x', help='proxy')
+parser.add_argument('-o', help='Only save payloads to a file, this option does not make requests.')
 args = parser.parse_args()
 
 
@@ -124,7 +127,7 @@ def get_payload():
         exit()
 
 def ssrf_completed():
-    time.sleep(10)
+    time.sleep(5)
     print(f"\n{BOLD}SSRF testing completed...wait for few seconds...{NC}\n")
 
 
@@ -176,6 +179,9 @@ def exploit_url_ssrf(arg_host,ssrf_payloads):
     final_payloads = arg_host.replace("BBSSRF",ssrf_payloads)
     if args.v:
         print(final_payloads)
+    if args.o:
+        save_payloads(final_payloads)
+        sys.exit()
     try:
         if args.x:
             ssrf_request = requests.get(final_payloads, proxies=proxy, verify=False, timeout=10)
@@ -188,6 +194,9 @@ def exploit_url_ssrf(arg_host,ssrf_payloads):
 def exploit_file_ssrf(final_req_host,full_request_Headers,full_request_postData_dict,file_gen_payload,full_request_method):
     if args.v:
         print(file_gen_payload)
+    if args.o:
+        save_payloads(file_gen_payload)
+        sys.exit()
     if full_request_method == "POST":
         try:
             if args.x:
@@ -358,8 +367,9 @@ def get_host_from_URL_File():
         url_to_test = line.rstrip()
         get_host_from_URL(url_to_test,args.b)
 
-
-
+def save_payloads(final_payloads):
+    with open(args.o,'a+') as output:
+        output.write(final_payloads+"\r\n")
 
 
 def url_file_exp():
